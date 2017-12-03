@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+
+        <!-- Load the Paper.js library -->
+        <script type="text/javascript" src="js/paper-full.js">console.log("lol")</script>
+        <!-- Define inlined PaperScript associate it with myCanvas -->
+        <script type="text/javascript" src="js/graph.js"></script>
+    </head>
+    <body>
+        <div class="leftsidemenu">
+            <div class="leftsidemenubuttons">Simple Loop</div>
+            <div class="leftsidemenubuttons">Advanced Loop?</div>
+            <div class="leftsidemenubuttons">Advanced Program ?</div>
+        </div>
+        <div class="row">
+            <div class="column">
+                <div class="columnheader">
+                    Simple Loop
+                </div>
+                <div class="columnbody">
+                    <canvas id="myCanvas"  width="400" height="800" style="border:3px outset" ></canvas>
+                </div>
+            </div>
+            <div class="column">
+                <div class="columnheader">
+                    CFG
+                </div>
+                <div class="columnbody">
+                    <select id="select_from" onchange="change_select_from()">
+                        <option value="Begin">Begin</option>
+                    </select>
+                    <select id="select_to" onchange="change_select_to()">
+                        <option value="New Node">New Node</option>
+                    </select>
+                    <input type="text" id="input_new_node">
+                    <input id="addNode" type="button" value="Add Edge" onclick="do_add_edge_cg();" />
+
+                    <br>
+                    <input id="Load Loop" type="button" value="Reset" onclick="do_reset_cg();" />
+                </div>
+
+                <div class="columnheader">
+                    Variable Values
+                </div>
+                <div class="columnbody">
+                    A: <input type="range" name="valueA" id="inputA" min="0" max="9" value="4"><br>
+                    B: <input type="range" name="valueB" id="inputB" min="0" max="9" value="4"><br>
+                    cache size: <input type="range" name="cs_slider" id="cs_slider" min="2" max="9" value="4"><br>
+                </div>
+
+                <div class="columnheader">
+                    Cache
+                </div>
+                <div class="columnbody">
+                    <div class="cache_display_container">
+                        <div class="cache_display_entry" id="c0">  </div>
+                        <div class="cache_display_entry" id="c1">  </div>
+                        <div class="cache_display_entry" id="c2">  </div>
+                        <div class="cache_display_entry" id="c3">  </div>
+                        <div class="cache_display_entry" id="c4" style='background:#639D11'>  </div>
+                        <div class="cache_display_entry" id="c5" style='background:#639D11'>  </div>
+                        <div class="cache_display_entry" id="c6" style='background:#639D11'>  </div>
+                        <div class="cache_display_entry" id="c7" style='background:#639D11'>  </div>
+                        <div class="cache_display_entry" id="c8" style='background:#639D11'>  </div>
+                    </div>
+                    <input id="Reset" type="button" value="Reset" onclick="do_step_reset();" />
+                    <input id="Next" type="button" value="Next" onclick="do_step_next();" />
+                    <hr>
+                    The cache representation above shows the behaviour of a Last Recently Used (LRU) cache. Use the Next button to step through the loaded program and see what variables are put into the cache at what time.
+                </div>
+            </div>
+        </div>
+        
+        
+    </body>
+</html>
