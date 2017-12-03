@@ -28,6 +28,8 @@ function customgraph() {
     this.begin_node = new customgraph_node(this, this, 'Begin');
     this.nodes = [this.begin_node];
 
+    this.cur = this.begin_node;
+
     this.calc_maxes = function(){
         var new_max_depth = 0;
         var new_max_width = 0;

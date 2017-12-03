@@ -12,7 +12,32 @@ lru_must.print();
 lru_must.add('A');
 lru_must.print();
 
+
 var cg = new customgraph();
+cg.add_edge('Begin', 'A');
+cg.add_edge('A', 'B');
+cg.add_edge('A', 'C');
+cg.add_edge('B', 'D');
+cg.add_edge('C', 'D');
+cg.add_edge('D', 'A');
+
+update_select_from();
+update_select_to();
+update_graphtext();
+
+function update_graphtext(){
+    txtbox = document.getElementById('graphtext');
+
+    pstring = ""
+    for (var i = 0; i < cg.nodes.length; i++){
+        for (var j = 0; j < cg.nodes[i].children.length; j++){
+            pstring += cg.nodes[i].name + " -> " + cg.nodes[i].children[j].name;
+            pstring += "<br />";
+        }
+    }
+
+    txtbox.innerHTML = pstring;
+}
 
 function do_add_edge_cg() {
     select_from = document.getElementById('select_from');
@@ -29,7 +54,8 @@ function do_add_edge_cg() {
 
     update_select_from();
     update_select_to();
-    cg.calc_maxes();
+    update_graphtext();
+    //cg.calc_maxes();
 }
 
 function do_reset_cg() {
@@ -37,6 +63,7 @@ function do_reset_cg() {
 
     update_select_to();
     update_select_from();
+    update_graphtext();
 
 }
 
