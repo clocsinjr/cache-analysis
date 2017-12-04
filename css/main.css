@@ -72,3 +72,10 @@ body {
     height: 30px;
     font-family: arial;
 }
+
+.graphtext{
+    border:3px inset;
+    padding: 10px;
+    font-family: "Courier New";
+    background: #FAFAFA;
+}
