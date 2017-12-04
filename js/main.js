@@ -14,48 +14,71 @@ lru_must.print();
 
 
 var cg = new customgraph();
-cg.add_edge('Begin', 'A');
-cg.add_edge('A', 'B');
-cg.add_edge('A', 'C');
-cg.add_edge('B', 'D');
-cg.add_edge('C', 'D');
-cg.add_edge('D', 'A');
+cg.add_edge('Begin', 'A', 'a1');
+cg.add_edge('a1', 'B', 'b1');
+cg.add_edge('a1', 'C', 'c1');
+cg.add_edge('b1', 'D', 'd1');
+cg.add_edge_existing('c1', 'd1');
+cg.add_edge_existing('d1', 'a1');
 
 update_select_from();
 update_select_to();
 update_graphtext();
 
+function do_graph_next() {
+    cg.next_step();
+    update_graphtext();
+}
+
 function update_graphtext(){
     txtbox = document.getElementById('graphtext');
+    curbox = document.getElementById('curtext');
 
     pstring = ""
     for (var i = 0; i < cg.nodes.length; i++){
         for (var j = 0; j < cg.nodes[i].children.length; j++){
-            pstring += cg.nodes[i].name + " -> " + cg.nodes[i].children[j].name;
-            pstring += "<br />";
+            var tn = cg.nodes[i];
+            var cn = cg.nodes[i].children[j];
+
+            pstring += tn.nid + " (" + tn.elem + ")" + " -> ";
+            pstring += cn.nid + " (" + cn.elem + ")" + "<br />";
         }
     }
 
     txtbox.innerHTML = pstring;
+
+    pstring = "current nodes: <br />";
+    for (var i = 0; i < cg.cur.length; i++){
+        pstring += "* "+ cg.cur[i].nid + " ("+ cg.cur[i].elem + ") <br />";
+    }
+
+    curbox.innerHTML = pstring;
 }
 
 function do_add_edge_cg() {
     select_from = document.getElementById('select_from');
     select_to = document.getElementById('select_to');
-    nn_input = document.getElementById('input_new_node');
+    
+    nn_e_input = document.getElementById('input_new_node_elem');
+    nn_id_input = document.getElementById('input_new_node_nid');
+
 
     if (select_to.value == "New Node"){
-        cg.add_edge(select_from.value, nn_input.value);
+        if(cg.find(nn_id_input.value)){
+            window.alert("That node ID already exists! Please choose another");
+            return;
+        }
+
+        cg.add_edge(select_from.value, nn_e_input.value, nn_id_input.value);
     }
     else{
-        cg.add_edge(select_from.value, select_to.value);
+        cg.add_edge_existing(select_from.value, select_to.value);
     }
     cg.print();
 
     update_select_from();
     update_select_to();
     update_graphtext();
-    //cg.calc_maxes();
 }
 
 function do_reset_cg() {
@@ -73,19 +96,23 @@ function change_select_from(){
 
 function change_select_to(){
     select_to = document.getElementById('select_to');
-    nn_input = document.getElementById('input_new_node');
+    div = document.getElementById('div_input_hide');
+    nn_e_input = document.getElementById('input_new_node_elem');
+    nn_id_input = document.getElementById('input_new_node_nid');
 
-    if (select_to.value == "New Node")
-        nn_input.style.display = 'inline';
-    else
-        nn_input.style.display = 'none';
+    if (select_to.value == "New Node"){
+        div.style.display = 'inline';
+    }
+    else {
+        div.style.display = 'none';
+    }
 }
 
 function update_select_from(){
     select_from = document.getElementById('select_from');
     select_from.options.length = 0;
     for (var i = 0; i < cg.nodes.length; i++){
-        select_from.options[i] = new Option(cg.nodes[i].name, cg.nodes[i].name);
+        select_from.options[i] = new Option(cg.nodes[i].nid, cg.nodes[i].nid);
     }
 }
 
@@ -97,8 +124,8 @@ function update_select_to(){
     select_to.options[0] = new Option("New Node", "New Node");
 
     for (var i = 0; i < cg.nodes.length; i++){
-        if (cg.nodes[i].name != select_from.value)
-            select_to.options[select_to.options.length] = new Option(cg.nodes[i].name, cg.nodes[i].name);
+        if (cg.nodes[i].nid != select_from.value)
+            select_to.options[select_to.options.length] = new Option(cg.nodes[i].nid, cg.nodes[i].nid);
     }
 }
 

@@ -1,79 +1,66 @@
-function customgraph_node(top, parent_node, name) {
+function customgraph_node(top, parent_node, elem, nid) {
     this.top = top;
-    this.name = name;
-    this.depth = parent_node.depth + 1;
+    this.elem = elem;
+    this.nid = nid;
+
+    this.parents = [parent_node];
     this.children = [];
 
-    this.add_child = function(child_name){
-        child_node = new customgraph_node(this.top, this, child_name);
+    this.add_child = function(child_elem, child_id){
+        child_node = new customgraph_node(this.top, this, child_elem, child_id);
         this.top.nodes.push(child_node);
         this.children.push(child_node);
     }
 
     this.give_child = function(child_node){
         this.children.push(child_node);
-
-        if (this.depth + 1 > child_node.depth){
-            child_node.depth = this.depth + 1;
-        }
+        child_node.parents.push(this);
     }
 }
 
 function customgraph() {
-    this.depth = 0;
-
-    this.max_depth = 1;
-    this.max_width = 1;
-
-    this.begin_node = new customgraph_node(this, this, 'Begin');
+    this.begin_node = new customgraph_node(this, this, 'Begin', 'Begin');
     this.nodes = [this.begin_node];
+    this.elem_ids = ['Begin'];
+    this.cur = [this.begin_node];
 
-    this.cur = this.begin_node;
+    this.next_step = function(){
+        var newcur = [];
 
-    this.calc_maxes = function(){
-        var new_max_depth = 0;
-        var new_max_width = 0;
+        for (var c = 0; c < this.cur.length; c++){
+            var cchildren = this.cur[c].children;
+            for (var c2 = 0; c2 < cchildren.length; c2++){
+                var ccpar = cchildren[c2].parents;
 
-        var width_for_depth = [];
-
-        for (var i = 0; i < this.nodes.length; i++){
-
-            if (this.nodes[i].depth > new_max_depth){
-                new_max_depth = this.nodes[i].depth;
+                for (var p=0; p < ccpar.length; p++){
+                    console.log(ccpar[p].elem);
+                }
+                if (cchildren[c2].parents.length == 1){
+                    newcur.push(this.cur[c].children[c2]);
+                }
             }
         }
-        this.max_depth = new_max_depth;
 
-        // initialize the array of widths per depth with zeroes
-        for (var i = 0; i < new_max_depth + 1; i++){ width_for_depth[i] = 0; }
-
-        // Count the number of nodes at each depth
-        for (var i = 0; i < this.nodes.length; i++){
-            width_for_depth[this.nodes[i].depth] += 1;
-        }
-
-        // get the highest width found
-        this.max_width = Math.max.apply(null, width_for_depth);
-
-        console.log("depth: " + this.max_depth + ", width: " + this.max_width);
+        this.cur = newcur;
     }
-
-    this.find = function(node_name){
+    this.find = function(node_id){
         for (var i = 0; i < this.nodes.length; i++){
-            if (this.nodes[i].name == node_name){
+            if (this.nodes[i].nid == node_id){
                 return this.nodes[i];
             }
         }
         return false;
     }
-    this.add_edge = function(nfrom, nto){
-        var from_node = this.find(nfrom);
-        var to_node = this.find(nto);
+    this.add_edge = function(nid_from, elem_to, nid_to){
+        var from_node = this.find(nid_from);
 
-        if (!to_node)
-            from_node.add_child(nto);
-        else
-            from_node.give_child(to_node);
+        from_node.add_child(elem_to, nid_to);
+    }
+    this.add_edge_existing = function(nid_from, nid_to){
+        var from_node = this.find(nid_from);
+        var to_node = this.find(nid_to);
+
+        from_node.give_child(to_node);
             
     }
     /* debug print function */
@@ -82,7 +69,7 @@ function customgraph() {
         for (var i = 0; i < this.nodes.length; i++){
             var i_node = this.nodes[i];
             for (var j = 0; j < i_node.children.length; j++){
-                pstring += "" + i_node.name + " -> " + i_node.children[j].name + ", ";
+                pstring += "" + i_node.elem + " -> " + i_node.children[j].elem + ", ";
             }
         }
         console.log(pstring);
