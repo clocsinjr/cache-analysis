@@ -34,18 +34,23 @@ function update_graphtext(){
     txtbox = document.getElementById('graphtext');
     curbox = document.getElementById('curtext');
 
-    pstring = ""
+    txtbox.innerHTML = ""
     for (var i = 0; i < cg.nodes.length; i++){
         for (var j = 0; j < cg.nodes[i].children.length; j++){
             var tn = cg.nodes[i];
             var cn = cg.nodes[i].children[j];
 
-            pstring += tn.nid + " (" + tn.elem + ")" + " -> ";
-            pstring += cn.nid + " (" + cn.elem + ")" + "<br />";
+            var tn_str = tn.nid + " (" + tn.elem + ")";
+            var cn_str = cn.nid + " (" + cn.elem + ")";
+
+            if (cg.find_cur(tn.nid))
+                tn_str = tn_str.fontcolor("green");
+            if (cg.find_cur(cn.nid))
+                cn_str = cn_str.fontcolor("green");
+
+            txtbox.innerHTML  += tn_str + " -> " + cn_str + "<br />";
         }
     }
-
-    txtbox.innerHTML = pstring;
 
     pstring = "current nodes: <br />";
     for (var i = 0; i < cg.cur.length; i++){

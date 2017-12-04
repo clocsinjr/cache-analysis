@@ -51,6 +51,15 @@ function customgraph() {
         }
         return false;
     }
+
+    this.find_cur = function(node_id){
+        for (var i = 0; i < this.cur.length; i++){
+            if (this.cur[i].nid == node_id){
+                return this.cur[i];
+            }
+        }
+        return false;
+    }
     this.add_edge = function(nid_from, elem_to, nid_to){
         var from_node = this.find(nid_from);
 
