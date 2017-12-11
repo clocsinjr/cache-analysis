@@ -1,109 +1,133 @@
-function customgraph_node(top, parent_node, elem, nid) {
-    this.top = top;
-    this.elem = elem;
-    this.nid = nid;
+function customgraph_node(elem, nid) {
+    this.elem = elem; // node element, not unique
+    this.nid = nid; // node identifier, unique
 
-    this.loopback = null;
-    this.parents = [parent_node];
-    this.children = [];
+    // TODO: EDIT THIS LATER
+    // - no hardcoded size
+    // - change all functions that create nodes to include cache size
+    // - change all functions that create nodes to include cache type
+    this.cache = new LRUcache_must(4);
+}
 
-    this.add_child = function(child_elem, child_id){
-        child_node = new customgraph_node(this.top, this, child_elem, child_id);
-        this.top.nodes.push(child_node);
-        this.children.push(child_node);
+function customgraph_edge(first, second, lb) {
+    this.from = first;
+    this.to = second;
+    this.loopback = false;
+
+    if (lb){ this.loopback = lb; }
+}
+
+function print_edges(edges){
+    var pstring = "[";
+    for (var i = 0; i < edges.length; i++){
+        pstring += "(" + edges[i].from.nid + " -> " + edges[i].to.nid + "), ";
     }
+    pstring += "]";
+    console.log("MOVES: " + pstring);
 
-    this.give_child = function(child_node){
-        this.children.push(child_node);
-        child_node.parents.push(this);
+    return pstring;
+}
+function all_in(list1, list2){
+    for (var i = 0; i < list1.length; i++){
+        // return false if any element in list1 is not present in list2.
+        if (!list2.includes(list1[i]))
+            return false;
     }
-
-    this.give_child_lb = function(child_node){
-        this.children.push(child_node);
-        child_node.loopback = this;
-    }
+    return true;
 }
 
 function customgraph() {
-    this.begin_node = new customgraph_node(this, this, 'Begin', 'Begin');
-    this.end_node = new customgraph_node(this, null, 'End', 'End');
+    this.begin_node = new customgraph_node('Begin', 'Begin');
+    this.end_node = new customgraph_node('End', 'End');
+
     this.nodes = [this.begin_node, this.end_node];
+    this.edges = [];
+
     this.cur = [this.begin_node];
 
-    this.next_step = function(){
-        var newcur = [];
-        var to_remove = [];
-        var mult_par = [];
-
-        for (var c = 0; c < this.cur.length; c++){
-            var cchildren = this.cur[c].children;
-
-            // Loop through the children of this current node
-            for (var c2 = 0; c2 < cchildren.length; c2++){
-
-                // add the child to the new current list if it has one parent
-                // (it's only connnected to the current node)
-                if (cchildren[c2].parents.length == 1){
-
-                    // TODO: HERE THE CURRENT NODE ADVANCES ONE STEP
-                    newcur.push(cchildren[c2]);
-                    to_remove.push(c);
-                }
-                else{
-                    // add to childnodes with multiple parents
-                    mult_par.push(cchildren[c2]);
-                }
-            }
+    this.get_edges_children = function(node){
+        var child_edges = [];
+        for (var e = 0; e < this.edges.length; e++){
+            if (this.edges[e].from == node)
+                child_edges.push(this.edges[e]);
         }
-
-        // remove the marked indices
-        for (var i = 0; i < to_remove.length; i++){ this.cur.splice(to_remove[i], 1);}
-
-        
-        for (var c = 0; c < mult_par.length; c++){
-            // if all parents of the multi-parent node are found in this.cur
-            // then the parents are removed from this.cur and the multiparent
-            // node is added to newcur
-            if (this.find_parents_in_cur(mult_par[c])){
-                newcur.push(mult_par[c]);
-            }
+        return child_edges;
+    }
+    this.get_edges_parents = function(node){
+        var child_edges = [];
+        for (var e = 0; e < this.edges.length; e++){
+            if (this.edges[e].to == node)
+                child_edges.push(this.edges[e]);
         }
-        this.cur = newcur;
+        return child_edges;
     }
 
-    this.find_parents_in_cur = function(mp_node){
-        
-        // list of nodes to be removed from cur
-        var to_remove = [];
+    this.next_step = function(){
+        var cur_child_edges = [];
+        for (var c = 0; c < this.cur.length; c++){
+            var child_edges = this.get_edges_children(this.cur[c]);
+            cur_child_edges = cur_child_edges.concat(child_edges);
+        }
 
-        for (var p = 0; p < mp_node.parents.length; p++){
-            // check if the nid of the parent is in this.cur
-            var par = this.find_cur(mp_node.parents[p].nid);
-            if (par){
-                to_remove.push(par);
+        /* at this point, cur_child_edges contains all edges going from any
+         * node in this.cur */
+
+        var moves = [];
+        for (var c = 0; c < cur_child_edges.length; c++){
+            var edge = cur_child_edges[c];
+
+            // if check edge.to node has other parent edges
+            // if not:
+                // add edge to moves
+
+            // if so:
+                // check if all of its parent edges are in cur_child_edges
+                // if so: 
+                    // add edge to moves.
+
+            var par = this.get_edges_parents(edge.to);
+            if (par.length == 0){
+                moves.push(edge);
             }
             else{
-                return false;
+                if (all_in(par, cur_child_edges))
+                    moves.push(edge);
             }
         }
 
-        // THIS CODE WILL BE REACHED IF ALL THE PARENTS OF THIS MULTI PARENT
-        // NODE ARE PRESENT IN this.cur
+        /* At this point, moves contains all possible followup states of the
+         * current nodes. */
+         print_edges(moves);
 
-        // The following nested loops remove the marked parents of the mp_node
-        // from this.cur
-        for (var r = 0; r < to_remove.length; r++){
-            for (var c = 0; c < this.cur.length; c++){
-                if (to_remove[r].nid == this.cur[c].nid){
-                    this.cur.splice(c, 1);
-                    break;
-                }
+        // for edge in moves:
+            // check if edge.from node has other child edges
+            // if so:
+                // don't remove edge.from from cur
+            // if not:
+                // remove edge.from from cur
+            // add edge.to to cur
 
+        for (var m = 0; m < moves.length; m++){
+            var edge = moves[m];
+            var cld = this.get_edges_children(edge.from);
+
+            // check if all child edges of edge.from are in moves
+            if (all_in(cld, moves)){
+                // if all possible follow-up states of the node edge.from are
+                // marked in move, then remove the node from cur (if not
+                // already removed)
+                console.log(" - removing " + edge.from.nid + " from cur");
+                var index = this.cur.indexOf(edge.from);
+                if (index != -1){this.cur.splice(index, 1);}
+                    
             }
-        }
+            console.log(" - adding " + edge.to.nid + " to cur");
+            var curindex = this.cur.indexOf(edge.to);
+            if (curindex == -1){this.cur.push(edge.to);}
 
-        return true;
+        }
     }
+
     this.find = function(node_id){
         for (var i = 0; i < this.nodes.length; i++){
             if (this.nodes[i].nid == node_id){
@@ -124,30 +148,35 @@ function customgraph() {
     this.add_edge = function(nid_from, elem_to, nid_to){
         var from_node = this.find(nid_from);
 
-        from_node.add_child(elem_to, nid_to);
+        var to_node = new customgraph_node(elem_to, nid_to);
+        this.nodes.push(to_node); // add new node reference to nodes list
+
+        var newedge = new customgraph_edge(from_node, to_node);
+        this.edges.push(newedge); // add new edge reference to edge list
     }
     this.add_edge_loopback = function(nid_from, nid_to){
         var from_node = this.find(nid_from);
         var to_node = this.find(nid_to);
 
-        from_node.give_child_lb(to_node);
+        // create a new edge with loopback flag on
+        var newedge = new customgraph_edge(from_node, to_node, true);
+        this.edges.push(newedge); // add new edge reference to edge list
     }
 
     this.add_edge_existing = function(nid_from, nid_to){
         var from_node = this.find(nid_from);
         var to_node = this.find(nid_to);
 
-        from_node.give_child(to_node);
-            
+        var newedge = new customgraph_edge(from_node, to_node);
+        this.edges.push(newedge); // add new edge reference to edge list     
     }
+
     /* debug print function */
     this.print = function() {
         var pstring = "";
-        for (var i = 0; i < this.nodes.length; i++){
-            var i_node = this.nodes[i];
-            for (var j = 0; j < i_node.children.length; j++){
-                pstring += "" + i_node.elem + " -> " + i_node.children[j].elem + ", ";
-            }
+        for (var i = 0; i < this.edges.length; i++){
+            var edge = this.edges[i];
+            pstring += "" + edge.from.nid + " -> " + edge.to.nid + ", ";
         }
         console.log(pstring);
     }

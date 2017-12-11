@@ -52,19 +52,21 @@ function update_graphtext(){
     curbox = document.getElementById('curtext');
 
     txtbox.innerHTML = ""
-    for (var i = 0; i < cg.edges.length; i++){
-        var fn = cg.edges[i].from;
-        var tn = cg.edges[i].to;
+    for (var i = 0; i < cg.nodes.length; i++){
+        for (var j = 0; j < cg.nodes[i].children.length; j++){
+            var tn = cg.nodes[i];
+            var cn = cg.nodes[i].children[j];
 
-        var fn_str = fn.nid + " (" + fn.elem + ")";
-        var tn_str = tn.nid + " (" + tn.elem + ")";
+            var tn_str = tn.nid + " (" + tn.elem + ")";
+            var cn_str = cn.nid + " (" + cn.elem + ")";
 
-        if (cg.find_cur(fn.nid))
-            fn_str = fn_str.fontcolor("green");
-        if (cg.find_cur(tn.nid))
-            tn_str = tn_str.fontcolor("green");
+            if (cg.find_cur(tn.nid))
+                tn_str = tn_str.fontcolor("green");
+            if (cg.find_cur(cn.nid))
+                cn_str = cn_str.fontcolor("green");
 
-        txtbox.innerHTML  += fn_str + " -> " + tn_str + "<br />";
+            txtbox.innerHTML  += tn_str + " -> " + cn_str + "<br />";
+        }
     }
 
     pstring = "current nodes: <br />";
