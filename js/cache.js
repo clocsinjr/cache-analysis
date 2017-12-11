@@ -1,14 +1,10 @@
 function LRUcache_must(size, preset) {
 
     this.cache = [];
-    if (preset){
+    if (preset)
         this.cache = preset;
-    }
-    else{
-        for (var i = 0; i < size; i++) {
-            this.cache[i] = [];
-        }
-    }
+    else
+        for (var i = 0; i < size; i++) { this.cache[i] = []; }
         
 
     /* check_hit checks the cache and returns the index of the array if addr
@@ -26,6 +22,8 @@ function LRUcache_must(size, preset) {
     /* add pushes a new addr onto the cache. Uses check_hit to check if it
      * is already present. */
     this.add = function(addr){
+        if (!addr){return; }
+
         var hit = this.check_hit(addr);
 
         // If the addr was already found in the cache, remove it from its
@@ -33,6 +31,29 @@ function LRUcache_must(size, preset) {
         if (hit)
             this.cache[hit[0]].splice(hit[1], 1);
 
+
+        var moveover = [addr];
+        for (var c = 0; c < this.cache.length; c++){
+            
+            var prev_cap = 1;
+            for (var i = 0; i <= c; i++){ prev_cap += this.cache[i].length;}
+
+            // prev_cap now has the number of elements in the cache from 
+            // index 0 to c
+
+            if (prev_cap > (c + 1)){
+                var temp = moveover;
+                moveover = this.cache[c];
+
+                if (c+1 < this.cache.length)
+                    this.cache[c+1] = this.cache[c+1].concat(moveover);
+                this.cache[c] = [];
+            }
+        }
+
+
+
+        // push the added address to the top of the cache
         this.cache[0].push(addr);
     }
 
@@ -53,7 +74,7 @@ function LRUcache_must(size, preset) {
             }
         }
 
-        this.cache = tempcache.cache;
+        return tempcache;
     }
 
     this.clear = function(){
@@ -61,9 +82,18 @@ function LRUcache_must(size, preset) {
             this.cache[i] = [];
         }
     }
+    this.copy = function(){
+        var tempcache = new LRUcache_must(this.cache.length);
+        for (var i = 0; i < this.cache.length; i++){
+            for (var j = 0; j < this.cache[i].length; j++){
+                tempcache.cache[i][j] = this.cache[i][j];
+            }
+        }
+        return tempcache;
+    }
 
     /* debug print function */
-    this.print = function() {
+    this.toString = function() {
         var pstring = "";
         for (var i = 0; i < this.cache.length; i++){
             pstring += "[";
@@ -82,6 +112,11 @@ function LRUcache_must(size, preset) {
             pstring += "]";
                 
         }
+        return pstring;
+    }
+
+    this.print = function(){
+        var pstring = this.toString();
         console.log(pstring);
     }
 }

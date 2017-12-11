@@ -1,25 +1,17 @@
-var lru_must = new LRUcache_must(4, [['A'], [], ['C', 'F'], ['D']]);
-var lru_must_B = new LRUcache_must(4, [['C'], ['E'], ['A'], ['D']]);
-
+var lru_must = new LRUcache_must(4, [['X'], [], ['S', 'T'], []]);
 
 lru_must.print();
-lru_must_B.print();
 
-console.log("joined together (must-analysis):");
-lru_must.join(lru_must_B);
-lru_must.print();
-
-console.log("After cache hit for element A (must-analysis):");
+console.log("After adding 'Y' (must-analysis):");
 lru_must.add('A');
 lru_must.print();
 
 
-var cg = new customgraph();
+var cg = new customgraph(4);
 cg.add_edge('Begin', 'A', 'a1');
-cg.add_edge('a1', 'B', 'b11');
-cg.add_edge('b11', 'B', 'b12');
+cg.add_edge('a1', 'B', 'b1');
 cg.add_edge('a1', 'C', 'c1');
-cg.add_edge('b12', 'D', 'd1');
+cg.add_edge('b1', 'D', 'd1');
 cg.add_edge_existing('c1', 'd1');
 cg.add_edge_existing('d1', 'End');
 //cg.add_edge_loopback('d1', 'a1');
@@ -50,6 +42,7 @@ function do_graph_next() {
 function update_graphtext(){
     txtbox = document.getElementById('graphtext');
     curbox = document.getElementById('curtext');
+    cstbox = document.getElementById('cachetext');
 
     txtbox.innerHTML = ""
     for (var i = 0; i < cg.edges.length; i++){
@@ -71,8 +64,16 @@ function update_graphtext(){
     for (var i = 0; i < cg.cur.length; i++){
         pstring += "* "+ cg.cur[i].nid + " ("+ cg.cur[i].elem + ") <br />";
     }
-
     curbox.innerHTML = pstring;
+
+    cstbox.innerHTML = "cache states: <br />";
+    for (var i = 0; i < cg.nodes.length; i++){
+        var node = cg.nodes[i];
+        var nstr = node.nid + " (" + node.elem + ")";
+        if (cg.find_cur(node.nid)){ nstr = nstr.fontcolor("green"); }
+
+        cstbox.innerHTML  += nstr + ":<br />" + node.cstate.toString() + "<br /><br />";
+    }
 }
 
 function do_add_edge_cg() {
@@ -102,7 +103,7 @@ function do_add_edge_cg() {
 }
 
 function do_reset_cg() {
-    cg = new customgraph();
+    cg = new customgraph(4);
 
     update_select_to();
     update_select_from();

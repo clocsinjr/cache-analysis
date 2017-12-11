@@ -1,12 +1,10 @@
-function customgraph_node(elem, nid) {
+function customgraph_node(elem, nid, csize) {
     this.elem = elem; // node element, not unique
     this.nid = nid; // node identifier, unique
 
     // TODO: EDIT THIS LATER
-    // - no hardcoded size
-    // - change all functions that create nodes to include cache size
     // - change all functions that create nodes to include cache type
-    this.cache = new LRUcache_must(4);
+    this.cstate = new LRUcache_must(csize);
 }
 
 function customgraph_edge(first, second, lb) {
@@ -36,9 +34,10 @@ function all_in(list1, list2){
     return true;
 }
 
-function customgraph() {
-    this.begin_node = new customgraph_node('Begin', 'Begin');
-    this.end_node = new customgraph_node('End', 'End');
+function customgraph(csize) {
+    this.csize = csize;
+    this.begin_node = new customgraph_node(null, 'Begin', csize);
+    this.end_node = new customgraph_node(null, 'End', csize);
 
     this.nodes = [this.begin_node, this.end_node];
     this.edges = [];
@@ -61,7 +60,24 @@ function customgraph() {
         }
         return child_edges;
     }
+    this.update_node = function(node){
+        var par = this.get_edges_parents(node);
+        var caches = [];
 
+        // copy the caches of all the nodes parents to the caches list
+        for (var e = 0; e < par.length; e++){
+            var tcache = par[e].from.cstate.copy();
+            tcache.add(par[e].from.elem);
+            caches.push(tcache);
+        }
+
+        var newcache = caches[0];
+        for (var c = 1; c < caches.length; c++){
+            newcache = newcache.join(caches[c]);
+        }
+        node.cstate = newcache;
+        this.cur.push(node);
+    }
     this.next_step = function(){
         var cur_child_edges = [];
         for (var c = 0; c < this.cur.length; c++){
@@ -123,7 +139,9 @@ function customgraph() {
             }
             console.log(" - adding " + edge.to.nid + " to cur");
             var curindex = this.cur.indexOf(edge.to);
-            if (curindex == -1){this.cur.push(edge.to);}
+            if (curindex == -1){
+                this.update_node(edge.to);
+            }
 
         }
     }
@@ -148,7 +166,7 @@ function customgraph() {
     this.add_edge = function(nid_from, elem_to, nid_to){
         var from_node = this.find(nid_from);
 
-        var to_node = new customgraph_node(elem_to, nid_to);
+        var to_node = new customgraph_node(elem_to, nid_to, this.csize);
         this.nodes.push(to_node); // add new node reference to nodes list
 
         var newedge = new customgraph_edge(from_node, to_node);
