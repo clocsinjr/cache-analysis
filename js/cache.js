@@ -31,7 +31,9 @@ function LRUcache_must(size, preset) {
         if (hit)
             this.cache[hit[0]].splice(hit[1], 1);
 
-
+        // hit[0] = age
+        // hit[1] = position in list on age hit[0]
+        
         var moveover = [addr];
         for (var c = 0; c < this.cache.length; c++){
             

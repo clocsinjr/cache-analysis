@@ -73,6 +73,14 @@ body {
     font-family: arial;
 }
 
+.graphvis{
+    border:3px inset;
+    padding: 10px;
+    font-family: "Courier New";
+    background: #FAFAFA;
+    height: 500px;
+}
+
 .graphtext{
     border:3px inset;
     padding: 10px;

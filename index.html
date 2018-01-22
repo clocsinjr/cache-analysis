@@ -3,9 +3,11 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="css/main.css">
-
+        <script type="text/javascript" src="vis-master/dist/vis.js"></script>
+        
         <!-- Load the Paper.js library -->
         <script type="text/javascript" src="js/paper-full.js"></script>
+        
         <!-- Define inlined PaperScript associate it with myCanvas -->
     </head>
     <body>
@@ -20,8 +22,9 @@
                     Simple Loop
                 </div>
                 <div class="columnbody">
+                    <div class="graphvis" id="CFGdisplay"></div>
                     <!-- width="400" height="800" -->
-                    <p class="graphtext" id="graphtext"> Something went wrong! </p>
+                    <!-- <p class="graphtext" id="graphtext"> Something went wrong! </p> -->
                     <p class="graphtext" id="curtext"> Something went wrong! </p>
                     <p class="graphtext" id="cachetext"> Something went wrong! </p>
                     <input id="graphNext" type="button" value="Next" onclick="do_graph_next();" />
@@ -47,6 +50,10 @@
                         <br>
                     </div>
                     <input id="Load Loop" type="button" value="Reset" onclick="do_reset_cg();" />
+                    <hr>
+                    <p>
+                        Use the controls above to edit the CFG to the left!
+                    </p>
                 </div>
                 <!--
                 <div class="columnheader">
