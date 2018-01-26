@@ -1,5 +1,6 @@
 body {
     background-color: #F4F4F4;
+    font-family: helvetica
 }
 
 .leftsidemenu {
@@ -22,11 +23,18 @@ body {
     color: #FFFFFF;
 }
 
-.column {
+.column_cfgvis {
     background-color: #FFFFFF;
     margin: 10px;
     float: left;
-    width: 450px;
+    width: calc(100% - 700px);
+    min-width:400px;
+}
+.column_controls {
+    background-color: #FFFFFF;
+    margin: 10px;
+    float: right;
+    width: 400px;
 }
 .columnheader {
     background-color: #73AD21;
@@ -41,6 +49,25 @@ body {
 
 }
 
+.menublock{
+    background: #FAFAFA;
+    padding: 5px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+.menu_button_full {
+    width: calc(100% - 10px);
+}
+.selection_text {
+    font-size: 22px;
+    font-family: "Courier New";
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.selection_button {
+    float: right;
+    width: 30%;
+}
 .columnbody {
     background-color: #FFFFFF;
     margin: 10px;
@@ -78,7 +105,7 @@ body {
     padding: 10px;
     font-family: "Courier New";
     background: #FAFAFA;
-    height: 500px;
+    height: 300px;
 }
 
 .graphtext{

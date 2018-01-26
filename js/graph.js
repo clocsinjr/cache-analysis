@@ -163,15 +163,28 @@ function customgraph(csize) {
         }
         return false;
     }
-    this.add_edge = function(nid_from, elem_to, nid_to){
-        var from_node = this.find(nid_from);
+    
+    this.find_edge = function(nid_from, nid_to){
+        for (var e = 0; e < this.edges.length; e++){
+            if (this.edges[e].from.nid == nid_from && this.edges[e].to.nid == nid_to){
+                return this.edges[e];
+            }
+        }
+    }
+    
+    this.add_node = function(elem, nid){
+        var new_node = new customgraph_node(elem, nid, this.csize);
+        this.nodes.push(new_node); // add new node reference to nodes list
+    }
 
-        var to_node = new customgraph_node(elem_to, nid_to, this.csize);
-        this.nodes.push(to_node); // add new node reference to nodes list
+    this.add_edge = function(nid_from, nid_to){
+        var from_node = this.find(nid_from);
+        var to_node = this.find(nid_to);
 
         var newedge = new customgraph_edge(from_node, to_node);
-        this.edges.push(newedge); // add new edge reference to edge list
+        this.edges.push(newedge); // add new edge reference to edge list     
     }
+    
     this.add_edge_loopback = function(nid_from, nid_to){
         var from_node = this.find(nid_from);
         var to_node = this.find(nid_to);
@@ -179,14 +192,6 @@ function customgraph(csize) {
         // create a new edge with loopback flag on
         var newedge = new customgraph_edge(from_node, to_node, true);
         this.edges.push(newedge); // add new edge reference to edge list
-    }
-
-    this.add_edge_existing = function(nid_from, nid_to){
-        var from_node = this.find(nid_from);
-        var to_node = this.find(nid_to);
-
-        var newedge = new customgraph_edge(from_node, to_node);
-        this.edges.push(newedge); // add new edge reference to edge list     
     }
 
     /* debug print function */

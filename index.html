@@ -17,39 +17,63 @@
             <div class="leftsidemenubuttons">Advanced Program ?</div>
         </div>
         <div class="row">
-            <div class="column">
+            <div class="column_cfgvis" id="column_cfgvis">
                 <div class="columnheader">
                     Simple Loop
                 </div>
                 <div class="columnbody">
                     <div class="graphvis" id="CFGdisplay"></div>
-                    <!-- width="400" height="800" -->
-                    <!-- <p class="graphtext" id="graphtext"> Something went wrong! </p> -->
                     <p class="graphtext" id="curtext"> Something went wrong! </p>
                     <p class="graphtext" id="cachetext"> Something went wrong! </p>
                     <input id="graphNext" type="button" value="Next" onclick="do_graph_next();" />
-                    <canvas id="myCanvas"  width="400" height="50" style="border:3px outset" ></canvas>
                 </div>
             </div>
-            <div class="column">
+            <div class="column_controls">
                 <div class="columnheader">
                     CFG
                 </div>
                 <div class="columnbody">
-                    <select id="select_from" onchange="change_select_from()">
+                    <!--
+                    <select id="select_from" onchange="change_select_from()" style="width:35%">
                         <option value="Begin">Begin</option>
                     </select>
-                    <select id="select_to" onchange="change_select_to()">
+                    <select id="select_to" onchange="change_select_to()" style="width:35%">
                         <option value="New Node">New Node</option>
                     </select>
-                    <input id="addNode" type="button" value="Add Edge" onclick="do_add_edge_cg();" />
-                    <div id="div_input_hide">
+                    -->
+                    
+                    
+                    <div id="div_create_new_node">
                         <br>
                         Element: <input type="text" id="input_new_node_elem"> <br>
-                        Node ID: <input type="text" id="input_new_node_nid">
+                        Node ID: <input type="text" id="input_new_node_nid"> <br>
+                        <input id="addNode" type="button" value="Add New Node" onclick="do_add_node_cg();" style="width:20%"/>
                         <br>
                     </div>
-                    <input id="Load Loop" type="button" value="Reset" onclick="do_reset_cg();" />
+                    <hr>
+                    
+                    <button id="clear_selections" type="button" onclick="do_clear_selections();"> Clear </button>
+                    Selected: 
+                    <div class="menublock">
+                        Node 1: <span id="clicked_node_1" class="selection_text">-</span>
+                        <button id="Delete_selection_node1" type="button" onclick="do_delete_selection_node(1);" class="selection_button" disabled> Delete Node </button>
+                    </div>
+                    <div class="menublock">
+                        Node 2: <span id="clicked_node_2" class="selection_text">-</span>
+                        <button id="Delete_selection_node2" type="button" onclick="do_delete_selection_node(2);" class="selection_button" disabled> Delete Node </button>
+                    </div>
+                    <div class="menublock" style="text-align: center;">
+                        <button id="Create_selection_edge" type="button" onclick="do_add_edge_cg();" class="menu_button_full" disabled> Add Edge: Node 1 -> Node 2 </button>
+                    </div>
+                    <div class="menublock">
+                        Edge: <span id="clicked_edge" class="selection_text">-</span>
+                        <button id="Delete_selection_edge" type="button" onclick="do_delete_selection_edge();" class="selection_button" disabled> Delete edge </button>
+                    </div>
+                    
+                    
+                    <br>
+                    <hr>
+                    <input id="Reset" type="button" value="Reset" onclick="do_reset_cg();" />
                     <hr>
                     <p>
                         Use the controls above to edit the CFG to the left!
@@ -94,4 +118,5 @@
 
 <script type="text/javascript" src="js/cache.js"></script>
 <script type="text/javascript" src="js/graph.js"></script>
+<script type="text/javascript" src="js/graph_vis.js"></script>
 <script type="text/javascript" src="js/main.js"></script>
