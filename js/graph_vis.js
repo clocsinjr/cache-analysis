@@ -12,12 +12,23 @@ var s_node1 = null;
 var s_node2 = null;
 var s_edge = null;
 
+function get_label(node){
+    var label = node.elem + " (" + node.nid + ") \n";
+    if (node.nid == "Begin" || node.nid == "End")
+        label = node.nid;
+    
+    if (!(node.nid == "Begin"))
+        label += "\n" + node.cstate.toString(true);
+    
+    return label;
+}
+
 function reset_graphvis(){
     // create an array with nodes
     var nodes_list = [];
     for (var n = 0; n < cg.nodes.length; n++){
         var node =  cg.nodes[n];
-        nodes_list.push({id: node.nid, label: node.elem + "\n(" + node.nid + ")", color:COL_GREY});
+        nodes_list.push({id: node.nid, label: get_label(node), color:COL_GREY});
     }
     nodes = new vis.DataSet(nodes_list);
     
@@ -27,7 +38,7 @@ function reset_graphvis(){
     nodes.update(bnode);
     
     var enode = nodes.get("End");
-    enode.label = "End";
+    enode.label = "End\n" + cg.end_node.cstate.toString(true);
     nodes.update(enode);
     
     var edges_list = [];
@@ -49,7 +60,9 @@ function reset_graphvis(){
     
     var options = {
         nodes:{
-            chosen: false
+            chosen: false,
+            shape: 'box',
+            margin: 10
         },
         interaction:{hover:true},
         manipulation: {
@@ -195,12 +208,13 @@ function addNode_graphvis(elem, nid){
 function update_graphvis(){
     for (var n = 0; n < cg.nodes.length; n++){
         var thisnode = nodes.get(cg.nodes[n].nid);
-        thisnode.color = { background: COL_GREY }
+        thisnode.color = { background: COL_GREY };
+        thisnode.label = get_label(cg.nodes[n]);
         nodes.update(thisnode);
     }
     for (var c = 0; c < cg.cur.length; c++){
         var curnode = nodes.get(cg.cur[c].nid);
-        curnode.color = { background: COL_GREEN }
+        curnode.color = { background: COL_GREEN };
         nodes.update(curnode);
     }
     

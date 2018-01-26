@@ -55,19 +55,21 @@
                     <button id="clear_selections" type="button" onclick="do_clear_selections();"> Clear </button>
                     Selected: 
                     <div class="menublock">
+                        <button id="Delete_selection_node1" type="button" onclick="do_delete_selection_node(1);" class="selection_button" disabled> Delete </button>
                         Node 1: <span id="clicked_node_1" class="selection_text">-</span>
-                        <button id="Delete_selection_node1" type="button" onclick="do_delete_selection_node(1);" class="selection_button" disabled> Delete Node </button>
                     </div>
                     <div class="menublock">
+                        <button id="Delete_selection_node2" type="button" onclick="do_delete_selection_node(2);" class="selection_button" disabled> Delete </button>
                         Node 2: <span id="clicked_node_2" class="selection_text">-</span>
-                        <button id="Delete_selection_node2" type="button" onclick="do_delete_selection_node(2);" class="selection_button" disabled> Delete Node </button>
+                        
                     </div>
                     <div class="menublock" style="text-align: center;">
                         <button id="Create_selection_edge" type="button" onclick="do_add_edge_cg();" class="menu_button_full" disabled> Add Edge: Node 1 -> Node 2 </button>
                     </div>
                     <div class="menublock">
+                        <button id="Delete_selection_edge" type="button" onclick="do_delete_selection_edge();" class="selection_button" disabled> Delete </button>
                         Edge: <span id="clicked_edge" class="selection_text">-</span>
-                        <button id="Delete_selection_edge" type="button" onclick="do_delete_selection_edge();" class="selection_button" disabled> Delete edge </button>
+                        
                     </div>
                     
                     

@@ -95,7 +95,7 @@ function LRUcache_must(size, preset) {
     }
 
     /* debug print function */
-    this.toString = function() {
+    this.toString = function(vertical) {
         var pstring = "";
         for (var i = 0; i < this.cache.length; i++){
             pstring += "[";
@@ -112,6 +112,8 @@ function LRUcache_must(size, preset) {
             }
 
             pstring += "]";
+            if (vertical)
+                pstring += "\n";
                 
         }
         return pstring;
