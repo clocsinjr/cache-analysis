@@ -13,7 +13,7 @@ var s_node2 = null;
 var s_edge = null;
 
 function get_label(node){
-    var label = node.elem + " (" + node.nid + ") \n";
+    var label = node.elem + " (" + node.nid + ")";
     if (node.nid == "Begin" || node.nid == "End")
         label = node.nid;
     
@@ -222,21 +222,24 @@ function update_graphvis(){
 }
 
 function update_graphtext(){
-    curbox = document.getElementById('curtext');
+    /* This should not show how th cache state got to be, like with the
+     * update rules and what not */
+    
+    // curbox = document.getElementById('curtext');
     cstbox = document.getElementById('cachetext');
     
-    pstring = "current nodes: <br />";
-    for (var i = 0; i < cg.cur.length; i++){
-        pstring += "* "+ cg.cur[i].nid + " ("+ cg.cur[i].elem + ") <br />";
-    }
-    curbox.innerHTML = pstring;
+    // pstring = "current nodes: <br />";
+    // for (var i = 0; i < cg.cur.length; i++){
+        // pstring += "* "+ cg.cur[i].nid + " ("+ cg.cur[i].elem + ") <br />";
+    // }
+    // curbox.innerHTML = pstring;
 
-    cstbox.innerHTML = "cache states: <br />";
-    for (var i = 0; i < cg.nodes.length; i++){
-        var node = cg.nodes[i];
-        var nstr = node.nid + " (" + node.elem + ")";
-        if (cg.find_cur(node.nid)){ nstr = nstr.fontcolor("green"); }
+    // cstbox.innerHTML = "cache states: <br />";
+    // for (var i = 0; i < cg.nodes.length; i++){
+        // var node = cg.nodes[i];
+        // var nstr = node.nid + " (" + node.elem + ")";
+        // if (cg.find_cur(node.nid)){ nstr = nstr.fontcolor("green"); }
 
-        cstbox.innerHTML  += nstr + ":<br />" + node.cstate.toString() + "<br /><br />";
-    }
+        // cstbox.innerHTML  += nstr + ":<br />" + node.cstate.toString() + "<br /><br />";
+    // }
 }

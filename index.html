@@ -23,9 +23,10 @@
                 </div>
                 <div class="columnbody">
                     <div class="graphvis" id="CFGdisplay"></div>
+                    <button id="graphNext" type="button" onclick="do_graph_next();" class="menu_button_full" > Next step </button>
                     <p class="graphtext" id="curtext"> Something went wrong! </p>
                     <p class="graphtext" id="cachetext"> Something went wrong! </p>
-                    <input id="graphNext" type="button" value="Next" onclick="do_graph_next();" />
+                    
                 </div>
             </div>
             <div class="column_controls">
@@ -47,7 +48,7 @@
                         <br>
                         Element: <input type="text" id="input_new_node_elem"> <br>
                         Node ID: <input type="text" id="input_new_node_nid"> <br>
-                        <input id="addNode" type="button" value="Add New Node" onclick="do_add_node_cg();" style="width:20%"/>
+                        <input id="addNode" type="button" value="Add New Node" onclick="do_add_node_cg();" class="menu_button_full" />
                         <br>
                     </div>
                     <hr>
@@ -95,20 +96,6 @@
                     Cache
                 </div>
                 <div class="columnbody">
-                    <div class="cache_display_container">
-                        <div class="cache_display_entry" id="c0">  </div>
-                        <div class="cache_display_entry" id="c1">  </div>
-                        <div class="cache_display_entry" id="c2">  </div>
-                        <div class="cache_display_entry" id="c3">  </div>
-                        <div class="cache_display_entry" id="c4" style='background:#639D11'>  </div>
-                        <div class="cache_display_entry" id="c5" style='background:#639D11'>  </div>
-                        <div class="cache_display_entry" id="c6" style='background:#639D11'>  </div>
-                        <div class="cache_display_entry" id="c7" style='background:#639D11'>  </div>
-                        <div class="cache_display_entry" id="c8" style='background:#639D11'>  </div>
-                    </div>
-                    <input id="Reset" type="button" value="Reset" onclick="do_step_reset();" />
-                    <input id="Next" type="button" value="Next" onclick="do_step_next();" />
-                    <hr>
                     The cache representation above shows the behaviour of a Last Recently Used (LRU) cache. Use the Next button to step through the loaded program and see what variables are put into the cache at what time.
                 </div>
             </div>
