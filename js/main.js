@@ -13,7 +13,7 @@ lru_must.print();
 
 
 
-var cg = new customgraph(4);
+var cg = new customgraph(4, TYPE_CONC);
 cg.add_node('A', 'a1');
 cg.add_edge('Begin', 'a1');
 
@@ -32,10 +32,8 @@ cg.add_edge('d1', 'End');
 // cg.add_edge_loopback('d1', 'a1');
 
  
-reset_graphvis();
+init_graphvis();
 
-//update_select_from();
-//update_select_to();
 update_graphtext();
 //update_graphvis();
 
@@ -45,6 +43,9 @@ network.on("click", function (params) {
 
 function do_graph_next() {
     cg.next_step();
+    
+    
+    
     update_graphtext();
     update_graphvis();
 }
@@ -57,8 +58,8 @@ function do_add_node_cg(){
         window.alert("That node ID already exists! Please choose another");
         return;
     }
-    cg.add_node(nn_e_input, nn_id_input); // add to graph datastructure
-    addNode_graphvis(nn_e_input, nn_id_input); // add to graph visualization
+    var new_node = cg.add_node(nn_e_input, nn_id_input); // add to graph datastructure
+    addNode_graphvis(new_node); // add to graph visualization
 }
 function do_add_edge_cg() {
     if (s_node2.id == "Begin"){
@@ -81,24 +82,24 @@ function do_add_edge_cg() {
     var edge_id = s_node1.id + "-" + s_node2.id;
     var new_entry = { id: edge_id, from: s_node1.id, to: s_node2.id, arrows:"to"}
     edges.add(new_entry);
-    //edges.update(new_entry);
     cg.print();
 
-    //update_select_from();
-    //update_select_to();
     update_graphtext();
+    update_graphvis();
     clear_selections();
 }
 
 function do_reset_cg() {
-    cg = new customgraph(4);
+    if (!confirm("Are you sure you want to remove all nodes and edges?")) {
+        return;
+    }
+    var csize = document.getElementById("cache_size_slider").value;
+    var ctype = document.getElementById("cache_type_select").value;
+    cg = new customgraph(csize, ctype);
     
-    update_select_to();
-    update_select_from();
+    clean_graphvis();
     //update_graphtext();
-    //update_graphvis();
-    reset_graphvis();
-
+    update_graphvis();
 }
 
 function do_clear_selections(){
@@ -140,4 +141,9 @@ function do_delete_selection_edge(){
     edges.remove({id: nid_from + "-" + nid_to});
     update_graphtext();
     clear_selections();
+}
+
+var cache_slider = document.getElementById("cache_size_slider");
+cache_slider.oninput = function(){
+    document.getElementById("cache_size_display").innerHTML = cache_slider.value;
 }

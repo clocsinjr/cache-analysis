@@ -56,7 +56,8 @@ body {
     margin-bottom: 2px;
 }
 .menu_button_full {
-    width: calc(100% - 10px);
+    margin-top: 10px;
+    width: 100%;
 }
 .selection_text {
     font-size: 22px;
@@ -104,7 +105,7 @@ body {
     padding: 10px;
     font-family: "Courier New";
     background: #FAFAFA;
-    height: 300px;
+    height: 500px;
 }
 
 .graphtext{
@@ -112,4 +113,41 @@ body {
     padding: 10px;
     font-family: "Courier New";
     background: #FAFAFA;
+}
+
+
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_rangeslider */
+.slidecontainer {
+    width: 100%;
+}
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_rangeslider */
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_rangeslider */
+.slider:hover {
+    opacity: 1;
+}
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_rangeslider */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
+}
+/* https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_rangeslider */
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #4CAF50;
+    cursor: pointer;
 }

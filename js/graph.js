@@ -1,10 +1,18 @@
-function customgraph_node(elem, nid, csize) {
+TYPE_CONC = 1;
+TYPE_MUST = 2;
+TYPE_MAY = 3;
+
+function customgraph_node(elem, nid, csize, ctype) {
     this.elem = elem; // node element, not unique
     this.nid = nid; // node identifier, unique
 
-    // TODO: EDIT THIS LATER
-    // - change all functions that create nodes to include cache type
     this.cstate = new LRUcache_must(csize);
+    if (ctype == TYPE_CONC)
+        this.cstate = new LRUcache(csize);
+    else if (ctype == TYPE_MUST)
+        this.cstate = new LRUcache_must(csize);
+    else if (ctype == TYPE_MAY)
+        this.cstate = new LRUcache_may(csize);
 }
 
 function customgraph_edge(first, second, lb) {
@@ -34,10 +42,11 @@ function all_in(list1, list2){
     return true;
 }
 
-function customgraph(csize) {
+function customgraph(csize, ctype) {
     this.csize = csize;
-    this.begin_node = new customgraph_node(null, 'Begin', csize);
-    this.end_node = new customgraph_node(null, 'End', csize);
+    this.ctype = ctype;
+    this.begin_node = new customgraph_node(null, 'Begin', csize, ctype);
+    this.end_node = new customgraph_node(null, 'End', csize, ctype);
 
     this.nodes = [this.begin_node, this.end_node];
     this.edges = [];
@@ -60,7 +69,7 @@ function customgraph(csize) {
         }
         return child_edges;
     }
-    this.update_node = function(node){
+    this.update_node_abstract = function(node){
         var par = this.get_edges_parents(node);
         var caches = [];
 
@@ -78,13 +87,87 @@ function customgraph(csize) {
         node.cstate = newcache;
         this.cur.push(node);
     }
-    this.next_step = function(){
+    
+    this.get_cur_child_edges = function(){
+        /* This function looks through all nodes in current and check what
+         * edges can be followed to a follow-up node. All the edges that can
+         * be traversed are put in a list. This list is returned */
+        
         var cur_child_edges = [];
         for (var c = 0; c < this.cur.length; c++){
             var child_edges = this.get_edges_children(this.cur[c]);
             cur_child_edges = cur_child_edges.concat(child_edges);
         }
 
+        return cur_child_edges;
+    }
+    
+    this.next_step = function(){
+        if (this.ctype == TYPE_CONC)
+            this.next_step_conc();
+        else if (this.ctype == TYPE_MUST)
+            this.next_step_must();
+        else if (this.ctype == TYPE_MAY)
+            window.alert("May_cache step function not implemented yet!");
+        else
+            window.alert("this graph's cache type is not specified!");
+    }
+    this.next_step_conc = function(){
+        var cur_child_edges = this.get_cur_child_edges();
+        var next_node = null;
+        
+        var txtdiv = document.getElementById("next_step_text");
+        
+        if (cur_child_edges.length == 1){
+            // There's only one possible follow-up state
+            next_node = cur_child_edges[0].to;
+        }
+        else{
+            // There are more possible follow-up states
+            
+            
+            if (s_edge){
+                // if an edge is selected
+                console.log(print_edges(cur_child_edges));
+                for (var e = 0; e < cur_child_edges.length; e++){
+                    var edge = cur_child_edges[e];
+                    if (edge.from.nid == s_edge.from &&  edge.to.nid == s_edge.to)
+                        next_node = edge.to;
+                }
+                
+                if (!next_node){
+                    window.alert("Please select a traversable edge!");
+                return;
+                }
+            }
+            else{
+                window.alert("Please select an edge to traverse by clicking on it!");
+                return;
+            }
+        }
+        
+        var tempcache = this.cur[0].cstate.copy();
+        tempcache.add(this.cur[0].elem);
+        
+        next_node.cstate = tempcache;
+        this.cur = [next_node];
+        
+        cur_child_edges = this.get_cur_child_edges();
+        var pstring = "The control-flow is split! Select a traversable ";
+        pstring += "edge and click on \"Next step\" to continue!";
+            
+        if (cur_child_edges.length > 1)
+            txtdiv.innerHTML = pstring;
+        else if (cur_child_edges.length == 1)
+            txtdiv.innerHTML = "Click on \"Next step\" to continue!";
+        else 
+            txtdiv.innerHTML = "Done!";
+    }
+    
+    this.next_step_must = function(){
+        
+        var cur_child_edges = this.get_cur_child_edges();
+        
         /* at this point, cur_child_edges contains all edges going from any
          * node in this.cur */
 
@@ -113,8 +196,7 @@ function customgraph(csize) {
 
         /* At this point, moves contains all possible followup states of the
          * current nodes. */
-         print_edges(moves);
-
+         
         // for edge in moves:
             // check if edge.from node has other child edges
             // if so:
@@ -140,7 +222,7 @@ function customgraph(csize) {
             console.log(" - adding " + edge.to.nid + " to cur");
             var curindex = this.cur.indexOf(edge.to);
             if (curindex == -1){
-                this.update_node(edge.to);
+                this.update_node_abstract(edge.to);
             }
 
         }
@@ -173,8 +255,10 @@ function customgraph(csize) {
     }
     
     this.add_node = function(elem, nid){
-        var new_node = new customgraph_node(elem, nid, this.csize);
+        var new_node = new customgraph_node(elem, nid, this.csize, this.ctype);
         this.nodes.push(new_node); // add new node reference to nodes list
+        
+        return new_node;
     }
 
     this.add_edge = function(nid_from, nid_to){

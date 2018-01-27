@@ -24,8 +24,7 @@
                 <div class="columnbody">
                     <div class="graphvis" id="CFGdisplay"></div>
                     <button id="graphNext" type="button" onclick="do_graph_next();" class="menu_button_full" > Next step </button>
-                    <p class="graphtext" id="curtext"> Something went wrong! </p>
-                    <p class="graphtext" id="cachetext"> Something went wrong! </p>
+                    <div class="graphtext" id="next_step_text"> Click on "Next step" to continue! </div>
                     
                 </div>
             </div>
@@ -34,16 +33,6 @@
                     CFG
                 </div>
                 <div class="columnbody">
-                    <!--
-                    <select id="select_from" onchange="change_select_from()" style="width:35%">
-                        <option value="Begin">Begin</option>
-                    </select>
-                    <select id="select_to" onchange="change_select_to()" style="width:35%">
-                        <option value="New Node">New Node</option>
-                    </select>
-                    -->
-                    
-                    
                     <div id="div_create_new_node">
                         <br>
                         Element: <input type="text" id="input_new_node_elem"> <br>
@@ -64,9 +53,7 @@
                         Node 2: <span id="clicked_node_2" class="selection_text">-</span>
                         
                     </div>
-                    <div class="menublock" style="text-align: center;">
-                        <button id="Create_selection_edge" type="button" onclick="do_add_edge_cg();" class="menu_button_full" disabled> Add Edge: Node 1 -> Node 2 </button>
-                    </div>
+                    <button id="Create_selection_edge" type="button" onclick="do_add_edge_cg();" class="menu_button_full" disabled> Add Edge: Node 1 -> Node 2 </button>
                     <div class="menublock">
                         <button id="Delete_selection_edge" type="button" onclick="do_delete_selection_edge();" class="selection_button" disabled> Delete </button>
                         Edge: <span id="clicked_edge" class="selection_text">-</span>
@@ -76,7 +63,14 @@
                     
                     <br>
                     <hr>
-                    <input id="Reset" type="button" value="Reset" onclick="do_reset_cg();" />
+                    <select id="cache_type_select">
+                        <option value="1">Cache</option>
+                        <option value="2">Must-cache</option>
+                        <option value="3"> May-cache</option>
+                    </select>
+                    size: <span id="cache_size_display" class="selection_text">4</span>
+                    <input type="range" min="2" max="10" value="4" class="slider" id="cache_size_slider">
+                    <button id="Reset" type="button" onclick="do_reset_cg();" class="menu_button_full"> Start new graph </button>
                     <hr>
                     <p>
                         Use the controls above to edit the CFG to the left!

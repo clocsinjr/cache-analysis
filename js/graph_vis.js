@@ -18,13 +18,12 @@ function get_label(node){
         label = node.nid;
     
     if (!(node.nid == "Begin"))
-        label += "\n" + node.cstate.toString(true);
+        label += "\n\n" + node.cstate.toString(true);
     
     return label;
 }
 
-function reset_graphvis(){
-    // create an array with nodes
+function read_datastructure_graphvis(){
     var nodes_list = [];
     for (var n = 0; n < cg.nodes.length; n++){
         var node =  cg.nodes[n];
@@ -38,7 +37,7 @@ function reset_graphvis(){
     nodes.update(bnode);
     
     var enode = nodes.get("End");
-    enode.label = "End\n" + cg.end_node.cstate.toString(true);
+    enode.label = get_label(cg.find(enode.id));
     nodes.update(enode);
     
     var edges_list = [];
@@ -51,12 +50,18 @@ function reset_graphvis(){
     // create an array with edges
     edges = new vis.DataSet(edges_list);
 
-    // create a network
-    var container = document.getElementById('CFGdisplay');
     var data = {
     nodes: nodes,
     edges: edges
     };
+    
+    return data;
+}
+function init_graphvis(){
+    var data = read_datastructure_graphvis();
+    
+    // create a network
+    var container = document.getElementById('CFGdisplay');
     
     var options = {
         nodes:{
@@ -70,6 +75,11 @@ function reset_graphvis(){
         }
     };
     network = new vis.Network(container, data, options);
+}
+
+function clean_graphvis(){
+    var data = read_datastructure_graphvis();
+    network.setData(data);
 }
 
 function clear_selections(){
@@ -199,9 +209,9 @@ function onClick_graphvis(params){
     update_graphvis();
     
 }
-function addNode_graphvis(elem, nid){
-    nodes.add({id: nid, 
-        label: elem + "\n(" + nid + ")", 
+function addNode_graphvis(cgnode){
+    nodes.add({id: cgnode.nid, 
+        label: get_label(cgnode), 
         color:COL_GREY});
 }
 
@@ -216,10 +226,9 @@ function update_graphvis(){
         var curnode = nodes.get(cg.cur[c].nid);
         curnode.color = { background: COL_GREEN };
         nodes.update(curnode);
-    }
-    
-    
+    }    
 }
+
 
 function update_graphtext(){
     /* This should not show how th cache state got to be, like with the

@@ -26,34 +26,25 @@ function LRUcache_must(size, preset) {
 
         var hit = this.check_hit(addr);
 
-        // If the addr was already found in the cache, remove it from its
-        // previous position
-        if (hit)
-            this.cache[hit[0]].splice(hit[1], 1);
-
-        // hit[0] = age
-        // hit[1] = position in list on age hit[0]
+        var addr_age = this.cache.length; //just outside the cache
+        var pos_in_list = null;
         
-        var moveover = [addr];
-        for (var c = 0; c < this.cache.length; c++){
+        if (hit){
+            addr_age = hit[0];          // hit[0] = age
+            pos_in_list = hit[1]        // hit[1] = position in list on age hit[0]
             
-            var prev_cap = 1;
-            for (var i = 0; i <= c; i++){ prev_cap += this.cache[i].length;}
-
-            // prev_cap now has the number of elements in the cache from 
-            // index 0 to c
-
-            if (prev_cap > (c + 1)){
-                var temp = moveover;
-                moveover = this.cache[c];
-
-                if (c+1 < this.cache.length)
-                    this.cache[c+1] = this.cache[c+1].concat(moveover);
-                this.cache[c] = [];
-            }
+            // If the addr was already found in the cache, remove it from its
+            // previous position
+            this.cache[addr_age].splice(pos_in_list, 1);
         }
-
-
+        
+        for (var c = addr_age - 1; c >= 0; c--){
+            if ((c + 1) < this.cache.length){
+                var moveover = this.cache[c];
+                this.cache[c + 1] = this.cache[c + 1].concat(moveover);
+            }
+            this.cache[c] = [];
+        }
 
         // push the added address to the top of the cache
         this.cache[0].push(addr);
@@ -146,25 +137,61 @@ function LRUcache(size) {
     /* add pushes a new addr onto the cache. Uses check_hit to check if it
      * is already present. */
     this.add = function(addr){
-        var hit = this.check_hit(addr);
-        var bound = this.csize;
-        if (hit)
-            bound = hit;
+        if (!addr){return; }
 
-        for (var i=bound; i > 0; i--)
-            this.cache[i] = this.cache[i - 1];
+        var hit = this.check_hit(addr);
+        var addr_age = this.cache.length; //just outside the cache
+        if (hit){
+            addr_age = hit;
+            
+            // If the addr was already found in the cache, remove it from its
+            // previous position
+            this.cache[addr_age] = null;
+        }
+        
+        for (var c = addr_age - 1; c >= 0; c--){
+            if ((c + 1) < this.cache.length){
+                this.cache[c + 1] = this.cache[c];
+            }
+            this.cache[c] = null;
+        }
+
+        // push the added address to the top of the cache
         this.cache[0] = addr;
     }
 
+    this.clear = function(){
+        for (var i = 0; i < this.cache.length; i++) {
+            this.cache[i] = null;
+        }
+    }
+    this.copy = function(){
+        var tempcache = new LRUcache(this.cache.length);
+        for (var i = 0; i < this.cache.length; i++){
+            tempcache.cache[i] = this.cache[i];
+        }
+        return tempcache;
+    }
+    
+    this.toString = function(vertical) {
+        var pstring = "";
+        for (var i = 0; i < this.cache.length; i++){
+            pstring += "[";
+            if (this.cache[i])
+                pstring += this.cache[i];
+            else
+                pstring += " ";
+            pstring += "]";
+            if (vertical)
+                pstring += "\n";
+                
+        }
+        return pstring;
+    }
+    
     /* debug print function */
     this.print = function() {
-        var pstring = "";
-        for (var i = 0; i < this.csize; i++){
-            if (this.cache[i])
-                pstring += "[" + this.cache[i] + "]";
-            else
-                pstring += "[ ]";
-        }
+        var pstring = this.toString();
         console.log(pstring);
     }
 }
