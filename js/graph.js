@@ -6,18 +6,22 @@ function customgraph_node(elem, nid, csize, ctype) {
     this.elem = elem; // node element, not unique
     this.nid = nid; // node identifier, unique
 
-    this.cstate = new LRUcache_must(csize);
+    this.cstate = null;
     if (ctype == TYPE_CONC)
         this.cstate = new LRUcache(csize);
     else if (ctype == TYPE_MUST)
-        this.cstate = new LRUcache_must(csize);
+        this.cstate = new LRUcache_abstract(csize, TYPE_MUST);
     else if (ctype == TYPE_MAY)
-        this.cstate = new LRUcache_may(csize);
+        this.cstate = new LRUcache_abstract(csize, TYPE_MAY);
+    else
+        window.alert("No cache type specified!");
 }
 
 function customgraph_edge(first, second, lb) {
     this.from = first;
     this.to = second;
+    this.traversed = false;
+    
     this.loopback = false;
 
     if (lb){ this.loopback = lb; }
@@ -61,15 +65,58 @@ function customgraph(csize, ctype) {
         }
         return child_edges;
     }
+    
     this.get_edges_parents = function(node){
-        var child_edges = [];
+        var par_edges = [];
         for (var e = 0; e < this.edges.length; e++){
             if (this.edges[e].to == node)
-                child_edges.push(this.edges[e]);
+                par_edges.push(this.edges[e]);
         }
-        return child_edges;
+        return par_edges;
     }
+    
+    this.get_children = function(node){
+        var child_edges = this.get_edges_children(node);
+        var children = []
+        for (var c = 0; c < child_edges.length; c++){
+            if (children.indexOf(child_edges[c].to) == -1)
+                children.push(child_edges[c].to);
+        }
+        return children;
+    }
+    
+    this.get_parents = function(node){
+        var par_edges = this.get_edges_parents(node);
+        var parents = []
+        for (var c = 0; c < par_edges.length; c++){
+            if (parents.indexOf(par_edges[c].from) == -1)
+                parents.push(par_edges[c].from);
+        }
+        return parents;
+    }
+    
+    this.has_other_parents = function(node){
+        var parents = this.get_parents(node);
+        for (var p = 0; p < parents.length; p++){
+            if (!this.find_cur(parents[p].nid))
+                return true;
+        }
+        return false;
+    }
+    
+    this.all_traversed = function(edge_list){
+        for (var e = 0; e < edge_list.length; e++){
+            if ( !edge_list[e].traversed)
+                return false;
+        }
+        return true;
+    }
+    
     this.update_node_abstract = function(node){
+        /* This function takes a node, finds all its parents, takes the cache
+         * of all parents, joins the caches together and pushes the node as a
+         * new current node. */
+        
         var par = this.get_edges_parents(node);
         var caches = [];
 
@@ -85,7 +132,6 @@ function customgraph(csize, ctype) {
             newcache = newcache.join(caches[c]);
         }
         node.cstate = newcache;
-        this.cur.push(node);
     }
     
     this.get_cur_child_edges = function(){
@@ -105,10 +151,8 @@ function customgraph(csize, ctype) {
     this.next_step = function(){
         if (this.ctype == TYPE_CONC)
             this.next_step_conc();
-        else if (this.ctype == TYPE_MUST)
-            this.next_step_must();
-        else if (this.ctype == TYPE_MAY)
-            window.alert("May_cache step function not implemented yet!");
+        else if (this.ctype == TYPE_MUST || this.ctype == TYPE_MAY)
+            this.next_step_abstr();
         else
             window.alert("this graph's cache type is not specified!");
     }
@@ -128,7 +172,6 @@ function customgraph(csize, ctype) {
             
             if (s_edge){
                 // if an edge is selected
-                console.log(print_edges(cur_child_edges));
                 for (var e = 0; e < cur_child_edges.length; e++){
                     var edge = cur_child_edges[e];
                     if (edge.from.nid == s_edge.from &&  edge.to.nid == s_edge.to)
@@ -164,70 +207,39 @@ function customgraph(csize, ctype) {
             txtdiv.innerHTML = "Done!";
     }
     
-    this.next_step_must = function(){
+    this.next_step_abstr = function(){
+        var newcur = [];
         
-        var cur_child_edges = this.get_cur_child_edges();
-        
-        /* at this point, cur_child_edges contains all edges going from any
-         * node in this.cur */
-
-        var moves = [];
-        for (var c = 0; c < cur_child_edges.length; c++){
-            var edge = cur_child_edges[c];
-
-            // if check edge.to node has other parent edges
-            // if not:
-                // add edge to moves
-
-            // if so:
-                // check if all of its parent edges are in cur_child_edges
-                // if so: 
-                    // add edge to moves.
-
-            var par = this.get_edges_parents(edge.to);
-            if (par.length == 0){
-                moves.push(edge);
-            }
-            else{
-                if (all_in(par, cur_child_edges))
-                    moves.push(edge);
-            }
-        }
-
-        /* At this point, moves contains all possible followup states of the
-         * current nodes. */
-         
-        // for edge in moves:
-            // check if edge.from node has other child edges
-            // if so:
-                // don't remove edge.from from cur
-            // if not:
-                // remove edge.from from cur
-            // add edge.to to cur
-
-        for (var m = 0; m < moves.length; m++){
-            var edge = moves[m];
-            var cld = this.get_edges_children(edge.from);
-
-            // check if all child edges of edge.from are in moves
-            if (all_in(cld, moves)){
-                // if all possible follow-up states of the node edge.from are
-                // marked in move, then remove the node from cur (if not
-                // already removed)
-                console.log(" - removing " + edge.from.nid + " from cur");
-                var index = this.cur.indexOf(edge.from);
-                if (index != -1){this.cur.splice(index, 1);}
+        for (var c = 0; c < this.cur.length; c++){
+            var curn = this.cur[c];
+            
+            var children = this.get_children(curn);
+            for (var i = 0; i < children.length; i++){
+                var curn_child = children[i];
+                if (!this.has_other_parents(curn_child)){
+                    var edge_between = this.find_edge(curn.nid, curn_child.nid);
                     
+                    if (!edge_between.traversed){
+                        edge_between.traversed = true;
+                        this.update_node_abstract(curn_child);
+                        newcur.push(curn_child);
+                    }
+                }
             }
-            console.log(" - adding " + edge.to.nid + " to cur");
-            var curindex = this.cur.indexOf(edge.to);
-            if (curindex == -1){
-                this.update_node_abstract(edge.to);
-            }
-
         }
+        for (var c = 0; c < this.cur.length; c++){   
+            var curn = this.cur[c];
+            var cedges = this.get_edges_children(curn);
+            console.log(curn, cedges);
+            if (!this.all_traversed(cedges) && newcur.indexOf(curn) == -1){
+                // if not all edges from curn are traversed, add it back to cur
+                newcur.push(curn);
+            }
+        }
+        
+        this.cur = newcur;
     }
-
+    
     this.find = function(node_id){
         for (var i = 0; i < this.nodes.length; i++){
             if (this.nodes[i].nid == node_id){

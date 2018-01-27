@@ -1,19 +1,25 @@
 
 
-var lru_must = new LRUcache_must(4, [['X'], [], ['S', 'T'], []]);
+var lru_must = new LRUcache_abstract(4, TYPE_MUST, [['X'], [], ['A', 'T'], []]);
 
 lru_must.print();
 
-console.log("After adding 'Y' (must-analysis):");
+console.log("After adding 'A' (must-analysis):");
 lru_must.add('A');
 lru_must.print();
 
 
+var lru_may = new LRUcache_abstract(4, TYPE_MAY, [['X'], [], ['A', 'T'], []]);
+
+lru_may.print();
+
+console.log("After adding 'A' (may-analysis):");
+lru_may.add('A');
+lru_may.print();
 
 
 
-
-var cg = new customgraph(4, TYPE_CONC);
+var cg = new customgraph(4, TYPE_MUST);
 cg.add_node('A', 'a1');
 cg.add_edge('Begin', 'a1');
 

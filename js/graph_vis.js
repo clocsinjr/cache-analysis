@@ -72,6 +72,9 @@ function init_graphvis(){
         interaction:{hover:true},
         manipulation: {
             enabled: true
+        },
+        physics: {
+            enabled: false
         }
     };
     network = new vis.Network(container, data, options);
