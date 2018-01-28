@@ -39,7 +39,7 @@
                     <div id="div_create_new_node" class="columnsection">
                         Element: <input type="text" id="input_new_node_elem"> <br>
                         Node ID: <input type="text" id="input_new_node_nid"> <br>
-                        <input id="addNode" type="button" value="Add New Node" onclick="do_add_node_cg();" class="menu_button_full" />
+                        <button id="addNode" type="button" onclick="do_add_node_cg();" class="menu_button_full" > Add new node </button>
                     </div>
                     
                     <div class="sectionheader"> Selections </div>
@@ -55,7 +55,7 @@
                             Node 2: <span id="clicked_node_2" class="selection_text">-</span>
                             
                         </div>
-                        <button id="Create_selection_edge" type="button" onclick="do_add_edge_cg();" class="menu_button_full" disabled> Add Edge: Node 1 -> Node 2 </button>
+                        <button id="Create_selection_edge" type="button" onclick="do_add_edge_cg();" class="menu_button_full" disabled> Add edge: Node 1 -> Node 2 </button>
                         <div class="menublock">
                             <button id="Delete_selection_edge" type="button" onclick="do_delete_selection_edge();" class="selection_button" disabled> Delete </button>
                             Edge: <span id="clicked_edge" class="selection_text">-</span>
