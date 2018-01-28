@@ -46,14 +46,14 @@ network.on("click", function (params) {
     onClick_graphvis(params);
 });
 
-function do_graph_next() {
+function do_step_next() {
     cg.next_step();
     update_graphvis();
 }
 
-function do_graph_reset(){
+function do_step_reset(){
     cg.reset_graph();
-    clean_graphvis();
+    //clean_graphvis();
     update_graphvis();
 }
 
@@ -67,6 +67,8 @@ function do_add_node_cg(){
     }
     var new_node = cg.add_node(nn_e_input, nn_id_input); // add to graph datastructure
     addNode_graphvis(new_node); // add to graph visualization
+    
+    do_step_reset();
 }
 function do_add_edge_cg() {
     if (s_node2.id == "Begin"){
@@ -93,6 +95,7 @@ function do_add_edge_cg() {
 
     update_graphvis();
     clear_selections();
+    do_step_reset();
 }
 
 function do_reset_cg() {
@@ -115,6 +118,7 @@ function do_rework_cg(){
     
     clean_graphvis();
     update_graphvis();
+    do_step_reset();
 }
 
 function do_clear_selections(){
@@ -138,7 +142,9 @@ function do_delete_selection_node(node_num){
     }
     // remove node from visualization 
     nodes.remove({id: rm_id}); 
+    
     clear_selections();
+    do_step_reset();
 }
 
 function do_delete_selection_edge(){
@@ -153,7 +159,9 @@ function do_delete_selection_edge(){
     }
     // remove edge from visualization
     edges.remove({id: nid_from + "-" + nid_to});
+    
     clear_selections();
+    do_step_reset();
 }
 
 var cache_slider = document.getElementById("cache_size_slider");
