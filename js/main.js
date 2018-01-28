@@ -134,6 +134,12 @@ function do_delete_selection_node(node_num){
         rm_id = s_node2.id;
     }
     
+    // prevent deletion of the begin and end nodes
+    if (rm_id == "Begin" || rm_id == "End"){
+        window.alert("The begin and end nodes cannot be deleted.")
+        return;
+    }
+    
     for (var i = 0; i < cg.nodes.length; i++){
         if (cg.nodes[i].nid == rm_id){
             cg.nodes.splice(i, 1); // remove node from graph datastructure

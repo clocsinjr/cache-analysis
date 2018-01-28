@@ -169,10 +169,6 @@ function onClick_graphvis(params){
     
     var div = document.getElementById('clicked_node_edge');
     
-    // clicking the begin or end node does nothing
-    if (click_node_id == "Begin" || click_node_id == "End")
-        return;
-    
     if (click_edge_id && !click_node_id){
         // the user clicked on an edge exclusively
         s_node1 = null;
