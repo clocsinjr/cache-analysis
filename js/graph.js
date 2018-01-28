@@ -7,14 +7,21 @@ function customgraph_node(elem, nid, csize, ctype) {
     this.nid = nid; // node identifier, unique
 
     this.cstate = null;
-    if (ctype == TYPE_CONC)
-        this.cstate = new LRUcache(csize);
-    else if (ctype == TYPE_MUST)
-        this.cstate = new LRUcache_abstract(csize, TYPE_MUST);
-    else if (ctype == TYPE_MAY)
-        this.cstate = new LRUcache_abstract(csize, TYPE_MAY);
-    else
-        window.alert("No cache type specified!");
+    
+    
+    this.change_cache = function(csize, ctype){
+        this.cstate = null;
+        if (ctype == TYPE_CONC)
+            this.cstate = new LRUcache(csize);
+        else if (ctype == TYPE_MUST)
+            this.cstate = new LRUcache_abstract(csize, TYPE_MUST);
+        else if (ctype == TYPE_MAY)
+            this.cstate = new LRUcache_abstract(csize, TYPE_MAY);
+        else
+            window.alert("No cache type specified!");
+    }
+    
+    this.change_cache(csize, ctype);
 }
 
 function customgraph_edge(first, second, lb) {
@@ -230,7 +237,6 @@ function customgraph(csize, ctype) {
         for (var c = 0; c < this.cur.length; c++){   
             var curn = this.cur[c];
             var cedges = this.get_edges_children(curn);
-            console.log(curn, cedges);
             if (!this.all_traversed(cedges) && newcur.indexOf(curn) == -1){
                 // if not all edges from curn are traversed, add it back to cur
                 newcur.push(curn);
@@ -290,6 +296,36 @@ function customgraph(csize, ctype) {
         this.edges.push(newedge); // add new edge reference to edge list
     }
 
+    this.reset_graph = function(){
+        // reset cache states
+        for (var n = 0; n < this.nodes.length; n++){
+            var node = this.nodes[n];
+            node.cstate.clear();
+        }
+        
+        // reset edges
+        for (var e = 0; e < this.edges.length; e++){
+            var edge = this.edges[e];
+            edge.traversed = false;
+        }
+        
+        // reset current;
+        this.cur = [this.begin_node];
+    }
+    
+    this.rework_graph = function(csize, ctype){
+        this.csize = csize;
+        this.ctype = ctype;
+        
+        // reset graph to begin state
+        this.reset_graph();
+        
+        // change node properties
+        for (var n = 0; n < this.nodes.length; n++){
+            this.nodes[n].change_cache(csize, ctype);
+        }
+    }
+    
     /* debug print function */
     this.print = function() {
         var pstring = "";

@@ -40,7 +40,6 @@ cg.add_edge('d1', 'End');
  
 init_graphvis();
 
-update_graphtext();
 //update_graphvis();
 
 network.on("click", function (params) {
@@ -49,10 +48,12 @@ network.on("click", function (params) {
 
 function do_graph_next() {
     cg.next_step();
-    
-    
-    
-    update_graphtext();
+    update_graphvis();
+}
+
+function do_graph_reset(){
+    cg.reset_graph();
+    clean_graphvis();
     update_graphvis();
 }
 
@@ -90,7 +91,6 @@ function do_add_edge_cg() {
     edges.add(new_entry);
     cg.print();
 
-    update_graphtext();
     update_graphvis();
     clear_selections();
 }
@@ -104,7 +104,16 @@ function do_reset_cg() {
     cg = new customgraph(csize, ctype);
     
     clean_graphvis();
-    //update_graphtext();
+    update_graphvis();
+}
+
+function do_rework_cg(){
+    var csize = document.getElementById("cache_size_slider").value;
+    var ctype = document.getElementById("cache_type_select").value;
+    
+    cg.rework_graph(csize, ctype);
+    
+    clean_graphvis();
     update_graphvis();
 }
 
@@ -129,7 +138,6 @@ function do_delete_selection_node(node_num){
     }
     // remove node from visualization 
     nodes.remove({id: rm_id}); 
-    update_graphtext();
     clear_selections();
 }
 
@@ -145,7 +153,6 @@ function do_delete_selection_edge(){
     }
     // remove edge from visualization
     edges.remove({id: nid_from + "-" + nid_to});
-    update_graphtext();
     clear_selections();
 }
 

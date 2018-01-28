@@ -19,18 +19,19 @@
         <div class="row">
             <div class="column_cfgvis" id="column_cfgvis">
                 <div class="columnheader">
-                    Simple Loop
+                    Control-flow graph (CFG) display
                 </div>
                 <div class="columnbody">
                     <div class="graphvis" id="CFGdisplay"></div>
                     <button id="graphNext" type="button" onclick="do_graph_next();" class="menu_button_full" > Next step </button>
+                    <button id="graphReset" type="button" onclick="do_graph_reset();" class="menu_button_full" > Start over </button>
                     <div class="graphtext" id="next_step_text"> Click on "Next step" to continue! </div>
                     
                 </div>
             </div>
             <div class="column_controls">
                 <div class="columnheader">
-                    CFG
+                    CFG editing controls
                 </div>
                 <div class="columnbody">
                     <div id="div_create_new_node">
@@ -70,6 +71,7 @@
                     </select>
                     size: <span id="cache_size_display" class="selection_text">4</span>
                     <input type="range" min="2" max="10" value="4" class="slider" id="cache_size_slider">
+                    <button id="Rework" type="button" onclick="do_rework_cg();" class="menu_button_full"> Rework current graph </button>
                     <button id="Reset" type="button" onclick="do_reset_cg();" class="menu_button_full"> Start new graph </button>
                     <hr>
                     <p>
@@ -86,12 +88,6 @@
                     cache size: <input type="range" name="cs_slider" id="cs_slider" min="2" max="9" value="4"><br>
                 </div>
                 -->
-                <div class="columnheader">
-                    Cache
-                </div>
-                <div class="columnbody">
-                    The cache representation above shows the behaviour of a Last Recently Used (LRU) cache. Use the Next button to step through the loaded program and see what variables are put into the cache at what time.
-                </div>
             </div>
         </div>
         
