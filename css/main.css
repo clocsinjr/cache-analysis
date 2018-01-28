@@ -3,18 +3,12 @@ body {
     font-family: helvetica
 }
 
-.leftsidemenu {
-    background-color: #FFFFFF;
-    margin: 10px;
-    padding: 20px;
-    float: left;
-    width: 200px;
-}
-
 .leftsidemenubuttons {
     background-color: #F4F4F4;
+    border-style: none;
     margin:5px;
     padding: 5px;
+    width: 100%;
 }
 .leftsidemenubuttons:hover {
     background-color: #73AD21;
@@ -22,12 +16,22 @@ body {
     padding: 5px;
     color: #FFFFFF;
 }
+.leftsidemenutext{
+    font-size: 12px;
+}
+
+.column_information {
+    background-color: #FFFFFF;
+    margin: 10px;
+    float: left;
+    width: 300px;
+}
 
 .column_cfgvis {
     background-color: #FFFFFF;
     margin: 10px;
     float: left;
-    width: calc(100% - 700px);
+    width: calc(100% - 760px);
     min-width:400px;
 }
 .column_controls {
@@ -86,26 +90,6 @@ body {
     content: "";
     display: table;
     clear: both;
-}
-
-.cache_display_container{
-    border-radius: 15px;
-    background: #73AD21;
-    padding: 5px;
-    height: 44px;
-    margin-bottom: 10px;
-    margin-top: 10px;
-}
-
-.cache_display_entry{
-    float: left;
-    border-radius: 10px;
-    background: #FFFFFF;
-    padding: 5px;
-    margin: 2px;
-    width:30px;
-    height: 30px;
-    font-family: arial;
 }
 
 .graphvis{

@@ -35,7 +35,7 @@ cg.add_edge('c1', 'd1');
 
 cg.add_edge('d1', 'End');
 
-// cg.add_edge_loopback('d1', 'a1');
+//cg.add_edge_loopback('d1', 'a1');
 
  
 init_graphvis();
@@ -46,6 +46,38 @@ network.on("click", function (params) {
     onClick_graphvis(params);
 });
 
+function do_change_info(ctype){
+    var col = document.getElementById("column_information");
+    var vis = document.getElementById("column_cfgvis");
+    
+    var txt_click = document.getElementById("lmt_click");
+    var txt_cache = document.getElementById("lmt_cache");
+    var txt_must = document.getElementById("lmt_must");
+    var txt_may = document.getElementById("lmt_may");
+    
+    txt_click.style.display = "none";
+    txt_cache.style.display = "none";
+    txt_must.style.display = "none";
+    txt_may.style.display = "none";
+    
+    if(ctype){
+        if (ctype == TYPE_CONC){
+            txt_cache.style.display = "inline";
+        }
+        else if (ctype == TYPE_MUST){
+            txt_must.style.display = "inline";
+        }
+        else if (ctype == TYPE_MAY){
+            txt_may.style.display = "inline";
+        }
+        col.style.width = "500px";
+        vis.style.width = "calc(100% - 560px)";
+    }
+    else{
+        col.style.width = "300px";
+        vis.style.width = "calc(100% - 760px)";
+    }
+}
 function do_step_next() {
     cg.next_step();
     update_graphvis();

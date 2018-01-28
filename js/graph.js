@@ -105,8 +105,10 @@ function customgraph(csize, ctype) {
     this.has_other_parents = function(node){
         var parents = this.get_parents(node);
         for (var p = 0; p < parents.length; p++){
-            if (!this.find_cur(parents[p].nid))
-                return true;
+            var edge = this.find_edge(parents[p].nid, node.nid);
+            if (!this.find_cur(parents[p].nid) && !edge.loopback){
+                    return true;
+            }
         }
         return false;
     }
